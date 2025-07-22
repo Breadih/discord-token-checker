@@ -2,6 +2,8 @@
 
 A simple Flask web app that lets developers check whether a Discord token is a **bot** or a **user** token.
 
+Check the original repository, [here](https://github.com/discowd-nitwo/discord-token-checker).
+
 ## 🔍 What It Does
 
 - Accepts a Discord token through a web form
