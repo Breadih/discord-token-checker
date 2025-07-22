@@ -2,63 +2,193 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Discord Token Checker</title>
-    <style>
-        body {
-            font-family: monospace;
-            background: #121212;
-            color: #e0e0e0;
-            padding: 20px;
-        }
+  <meta charset="UTF-8" />
+  <title>Discord Token Checker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        input[type="text"] {
-            width: 100%;
-            padding: 8px;
-            font-size: 1em;
-            background: #1e1e1e;
-            border: 1px solid #333;
-            color: white;
-        }
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: linear-gradient(135deg, #0f0f10, #1a1a1d);
+      color: #e0e0e0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-        input[type="submit"] {
-            margin-top: 10px;
-            padding: 10px;
-            background: #5865F2;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
+    .container {
+      background: rgba(30, 30, 30, 0.8);
+      border: 1px solid #333;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      backdrop-filter: blur(20px);
+      animation: fadeIn 0.6s ease-in-out;
+    }
 
-        pre {
-            background: #1e1e1e;
-            padding: 15px;
-            overflow-x: auto;
-            border-radius: 8px;
-            white-space: pre-wrap;
-        }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #5865F2;
+      text-align: center;
+      letter-spacing: 1px;
+    }
 
-        .error {
-            color: red;
-        }
-    </style>
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1em;
+      background: #121212;
+      border: 2px solid #333;
+      border-radius: 10px;
+      color: #fff;
+      transition: border 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: #5865F2;
+      outline: none;
+      box-shadow: 0 0 10px #5865F288;
+    }
+
+    input[type="submit"] {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background: linear-gradient(145deg, #5865F2, #4752c4);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    input[type="submit"]:hover {
+      background: linear-gradient(145deg, #4752c4, #5865F2);
+      transform: scale(1.02);
+    }
+
+    pre {
+      background: #121212;
+      padding: 20px;
+      border-radius: 12px;
+      overflow-x: auto;
+      margin-top: 20px;
+      font-size: 0.9em;
+      line-height: 1.5em;
+      white-space: pre-wrap;
+      border-left: 4px solid #5865F2;
+    }
+
+    .error {
+      color: #ff4c4c;
+      font-weight: bold;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .success {
+      color: #57f287;
+      font-weight: bold;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #copy-btn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      font-size: 0.95em;
+      font-weight: bold;
+      background: #2f3136;
+      color: #ccc;
+      border: 2px solid #5865F2;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    #copy-btn:hover {
+      background: #5865F2;
+      color: white;
+    }
+
+    #copy-btn.copied {
+      background: #90ffb3;
+      border-color: #57f287;
+      color: #121212;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <h1>Discord Token Checker</h1>
+  <div class="container">
+    <h1>🔐 Discord Token Checker</h1>
+
     <form method="POST">
-        <label for="token">Enter Discord Token:</label><br>
-        <input type="text" name="token" id="token" required>
-        <input type="submit" value="Check">
+      <label for="token">Paste your Discord token:</label>
+      <input type="text" name="token" id="token" required />
+      <input type="submit" value="Check Token" />
     </form>
 
     {% if token_type %}
-    <h2>✅ Token is a {{ token_type }} Token</h2>
-    <pre>{{ result | tojson(indent=4) }}</pre>
+    <div class="success">✅ Token is a {{ token_type }} Token</div>
+    <pre id="result">{{ result | tojson(indent=4) }}</pre>
+    <button id="copy-btn">📋 Copy</button>
+
     {% elif error %}
-    <h2 class="error">❌ {{ error }}</h2>
-    <pre>{{ result | tojson(indent=4) }}</pre>
+    <div class="error">❌ {{ error }}</div>
+    <pre id="result">{{ result | tojson(indent=4) }}</pre>
+    <button id="copy-btn">📋 Copy</button>
     {% endif %}
+  </div>
+
+  <script>
+    const copyBtn = document.getElementById('copy-btn');
+    const resultBlock = document.getElementById('result');
+
+    if (copyBtn && resultBlock) {
+      copyBtn.addEventListener('click', () => {
+        const content = '```json\n' + resultBlock.innerText.trim() + '\n```';
+        navigator.clipboard.writeText(content).then(() => {
+          copyBtn.textContent = '✅ Copied!';
+          copyBtn.classList.add('copied');
+          setTimeout(() => {
+            copyBtn.textContent = '📋 Copy';
+            copyBtn.classList.remove('copied');
+          }, 1500);
+        });
+      });
+    }
+  </script>
 </body>
 
 </html>

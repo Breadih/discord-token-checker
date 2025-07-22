@@ -41,9 +41,7 @@ def index():
     # Clean sensitive info if present
     if isinstance(result, dict):
         result.pop("email", None)
-        result["email"] = "[Removed due to privacy]"
         result.pop("phone", None)
-        result["phone"] = "[Removed due to privacy]"
 
     return render_template("index.html", result=result, token_type=token_type, error=error)
 
